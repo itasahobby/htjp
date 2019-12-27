@@ -18,15 +18,21 @@ public class ServerHTJP {
     private RequestProcessor procc;
     
     public void start(){
+        
         while(true){
             // Accept client connections
             Socket client;
             try {
                 client = socket.accept();
+                System.out.println("Conexión aceptada");
                 // Declaramos las lecturas del buffer de entrada y salida del socket
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-                procc.process(in);
+                String response = procc.process(in);
+                out.write(response);
+                out.flush();
+                in.close();
+                out.close();
             } catch (IOException ex) {
                 Logger.getLogger(ServerHTJP.class.getName()).log(Level.SEVERE, null, ex);
             }
