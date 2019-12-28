@@ -19,12 +19,11 @@ import java.util.logging.Logger;
 
 public class ClientHTJP {
     private int port;
-    private ServerSocket socket;
+    private Socket socket;
     private InetAddress address;
     
     public void start(){
         
-        Socket socket = null;
         try{
             // Obtenemos la dirección IP del servidor
             InetAddress dirServidor = InetAddress.getByName("127.0.0.1");
@@ -36,8 +35,7 @@ public class ClientHTJP {
             // Establecemos un timeout de 300 segs
             System.out.println("CLIENTE: Conexion establecida con "+ dirServidor.toString() + " al puerto " + port);
             // Establecemos el canal de entrada
-            BufferedReader sEntrada = new BufferedReader(new InputStreamReader(
-            socket.getInputStream()));
+            BufferedReader sEntrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // Establecemos el canal de salida
             PrintWriter sSalida = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("CLIENTE: Enviando " + mensaje);
@@ -63,23 +61,7 @@ public class ClientHTJP {
     }
     
     public ClientHTJP(int port){
-        try {
-                this.port = port;
-                this.socket = new ServerSocket(port);
-
-        } catch (IOException ex){
-                Logger.getLogger(ServerHTJP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        this.port = port;        
     }
     
-    // Constructor to bind the server on an specified ip
-    public ClientHTJP(int port,String ip){
-        this(port);
-        try {
-            this.socket.bind(new InetSocketAddress(this.address, this.port));
-        } catch (IOException ex) {
-            Logger.getLogger(ServerHTJP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 }
