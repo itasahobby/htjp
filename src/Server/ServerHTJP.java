@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,12 +60,14 @@ public class ServerHTJP {
     }
     
     // Constructor to bind the server on an specified ip
-    public ServerHTJP(int port,RequestProcessor procc,String ip){
-        this(port,procc);
+    public ServerHTJP(String ip,int port,RequestProcessor procc){
+        this.port = port;
         try {
-            this.serverSocket.bind(new InetSocketAddress(this.address, this.port));
+            this.serverSocket = new ServerSocket(this.port, 50, InetAddress.getByName(ip));
         } catch (IOException ex) {
             Logger.getLogger(ServerHTJP.class.getName()).log(Level.SEVERE, null, ex);
         }
+        this.procc = procc;
+        this.procc = procc;
     }
 }

@@ -14,10 +14,12 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientHTJP {
+    private final String message;
     private final int port;
     private Socket socket;
     private InetAddress address;
@@ -25,23 +27,18 @@ public class ClientHTJP {
     public void start(){
         
         try{
-            // Obtenemos la dirección IP del servidor
-            InetAddress dirServidor = InetAddress.getByName("127.0.0.1");
-            // Obtenemos el puerto del servidor;
-            // Obtenemos el mensaje
-            String mensaje = "hola";
             // Creamos el socket y establecemos la conexión con el servidor
-            socket = new Socket(dirServidor, port);
+            socket = new Socket(address, port);
             // Establecemos un timeout de 300 segs
-            System.out.println("CLIENTE: Conexion establecida con "+ dirServidor.toString() + " al puerto " + port);
+            System.out.println("CLIENTE: Conexion establecida con "+ address.toString() + " al puerto " + port);
             // Establecemos el canal de entrada
             BufferedReader sEntrada = new BufferedReader(new InputStreamReader(
             socket.getInputStream()));
             // Establecemos el canal de salida
             PrintWriter sSalida = new PrintWriter(socket.getOutputStream(), true);
-            System.out.println("CLIENTE: Enviando " + mensaje);
+            System.out.println("CLIENTE: Enviando " + message);
             // Enviamos el mensaje al servidor
-            sSalida.println(mensaje);
+            sSalida.println(message);
             // Recibimos la respuesta del servidor
             String recibido = sEntrada.readLine();
             System.out.println("CLIENTE: Recibido " + recibido);
@@ -62,8 +59,14 @@ public class ClientHTJP {
         
     }
     
-    public ClientHTJP(int port){
-        this.port = port;        
+    public ClientHTJP(String addr,int port,String message){
+        try {
+            this.address = InetAddress.getByName(addr);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ClientHTJP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.port = port;
+        this.message = message;
     }
     
 }
