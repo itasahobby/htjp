@@ -21,12 +21,12 @@ public class ThreadServidor extends Thread {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // Establecemos el canal de salida
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-            // Recibimos el mensaje del cliente
-            String line = reader.readLine();
-            // Enviamos el eco al cliente
+            // We send the response to the client
             String response = procc.process(reader);
             writer.println(response);
             // Cerramos los flujos
+            reader.close();
+            writer.close();
         } catch (SocketTimeoutException e) {
             System.err.println("300 segs sin recibir nada");
         } catch (IOException e) {

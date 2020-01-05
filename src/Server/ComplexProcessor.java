@@ -9,40 +9,45 @@ import java.util.logging.Logger;
 
 public class ComplexProcessor implements  RequestProcessor{
     
-    private String errorResponse(){
-        //create error message and stop the communication
-        return "Error";
+    // In HTJP actually shouldn't send anything with an incorrect request
+    private final String err = "GET /error.html HTTP/1.1";
+    private final String response = "POST /secretpath.html HTTP/1.1";
+    private Integer bodyLength;
+    
+    private Boolean processState(String stateLine){
+        // Return false if the state line doesn't fit the following
+        // syntax: HTTP/1.1 200 Ok
+        try{    
+            String[] splitted = stateLine.split(stateLine);
+            if(splitted[0].compareTo("HTTP/1.1") != 0){
+                return false;
+            }
+            if(splitted[1].compareTo("200") != 0){
+                return false;
+            }
+            if(splitted[2].compareTo("Ok") != 0){
+                return false;
+            }
+        }
+        catch(ArrayIndexOutOfBoundsException exception) {
+            return false;
+        }
+        return true;
     }
     
-    private String processState(String stateLine){
-        String error;
-        String[] splitted = stateLine.split(stateLine);
-        if(splitted[0].compareTo("HTTP/1.1") != 0){
-            error = "";
-        }
-        if(splitted[1].compareTo("200") != 0){
-            error = "";
-        }
-        return errorResponse();
-    }
-    
-    private String processHeader(String headLine){
+    private Boolean processHeader(String headLine){
         String[] splitted = headLine.split(" ",2);
         switch(splitted[0]){
             case "Date:":
-                // Comprobar que sea la misma hora con margen de un par de segundos
-                return "";
             case "Server":
-                // Open to filter by Server, not implemented in this simple processor
-                return "";
             case "Content-Length":
-                // This needs to match the length of the body
-                return "";
+                // Check error for when you don't give a decimal number into Content-Length
+               this.bodyLength = Integer.decode(splitted[1]);
             case "Content-Type":
                 // This needs to match the content of the body
-                return "";
+                return true;
             default:
-               return errorResponse();
+               return false;
         }
     } 
     
@@ -52,34 +57,39 @@ public class ComplexProcessor implements  RequestProcessor{
     
     @Override
     public String process(BufferedReader in) {
-        String response;
         try {
+            // Processing the State
             String stateLine = in.readLine();
-            if(stateLine.compareTo(errorResponse()) == 0){
-                
+            if(!processState(stateLine)){
+                return this.err;
             }
             
+            // Porcessing the Header
             String headLine;
             do{
                 headLine = in.readLine();
-                if(processHeader(headLine).compareTo(errorResponse()) == 0){
+                if(processHeader(headLine)){
+                    return this.err;
                 }
             }while(!headLine.isEmpty());
             
+            // Reading the blank line that is needed between the header lines 
+            // and the body
             in.readLine();
+            // Porcessing the Body
             String bodyLine;
             do{
                 bodyLine = in.readLine();
                 processBody(bodyLine);
             }while(!headLine.isEmpty());
             
-            return "GET /index.html HTTP/1.1";
+            return this.response;
             
         } catch (IOException ex) {
             Logger.getLogger(ComplexProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return "POST /index.html HTTP/1.1";
+        return this.err;
         
     }
     

@@ -27,31 +27,31 @@ public class ClientHTJP {
     public void start(){
         
         try{
-            // Creamos el socket y establecemos la conexión con el servidor
+            // Create the socket and stablish the connection with the server
             socket = new Socket(address, port);
-            // Establecemos un timeout de 300 segs
+            // Stablish a timeout of 3000 seconds
             System.out.println("CLIENTE: Conexion establecida con "+ address.toString() + " al puerto " + port);
-            // Establecemos el canal de entrada
-            BufferedReader sEntrada = new BufferedReader(new InputStreamReader(
-            socket.getInputStream()));
-            // Establecemos el canal de salida
-            PrintWriter sSalida = new PrintWriter(socket.getOutputStream(), true);
+            // Declare the input channel
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // Declare the output channel
+            PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("CLIENTE: Enviando " + message);
-            // Enviamos el mensaje al servidor
-            sSalida.println(message);
-            // Recibimos la respuesta del servidor
-            String recibido = sEntrada.readLine();
+            // Send the message to the server
+            output.println(message);
+            // Get the response from the server
+            String recibido = input.readLine();
             System.out.println("CLIENTE: Recibido " + recibido);
-            // Cerramos los flujos y el socket para liberar la conexión
-            sSalida.close();
-            sEntrada.close();
+            // We close the channels to free the connection
+            output.close();
+            input.close();
         } catch (SocketTimeoutException e) {
-        System.err.println("300 segs sin recibir nada");
+        System.err.println("300 seconds without receiving anything");
         }catch (IOException | NumberFormatException e) {
         System.err.println("Error: " + e.getMessage());
         } finally {
             try {
                 if(socket != null)
+                    // if the connection was made then we close it
                     socket.close();
             } catch (IOException e) {
             }

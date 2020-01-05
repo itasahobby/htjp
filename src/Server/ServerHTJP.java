@@ -68,6 +68,5 @@ public class ServerHTJP {
             Logger.getLogger(ServerHTJP.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.procc = procc;
-        this.procc = procc;
     }
 }
