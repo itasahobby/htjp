@@ -68,7 +68,7 @@ public class ComplexProcessor implements  RequestProcessor{
             String headLine;
             do{
                 headLine = in.readLine();
-                if(processHeader(headLine)){
+                if(!processHeader(headLine)){
                     return this.err;
                 }
             }while(!headLine.isEmpty());
